@@ -1,0 +1,7 @@
+{
+  "name": "personal-game-library-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
