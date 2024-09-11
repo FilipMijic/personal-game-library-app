@@ -1,0 +1,86 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{title}}</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #f="ngForm" (ngSubmit)="onSubmit()">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">Title</ion-label>
+            <ion-input type="text" ngModel name="title" required [(ngModel)]="gameTitle"
+              #titleInput="ngModel"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">Developer</ion-label>
+            <ion-input type="text" ngModel name="developer" required [(ngModel)]="developer"
+              #developerInput="ngModel"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-label position="floating">Publisher</ion-label>
+            <ion-input type="text" ngModel name="publisher" [(ngModel)]="publisher"
+              #publisherInput="ngModel"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-button color="tertiary" expand="block" shape="round">Upload image</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <img src="{{imageSource}}" style="width: 400px;" />
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-6>
+          <ion-item>
+            <ion-label position="floating">Genre</ion-label>
+            <ion-input type="text" ngModel name="genre" [(ngModel)]="genre" #genreInput="ngModel"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col col-6>
+          <ion-item>
+            <ion-label position="floating">Platform</ion-label>
+            <ion-input type="text" ngModel name="platform" [(ngModel)]="platform" #platformInput="ngModel"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-select label="Status" label-placement="floating" ngModel name="status" required [(ngModel)]="status"
+              #statusInput="ngModel">
+              <ion-select-option value="not played" color="red">Not played</ion-select-option>
+              <ion-select-option value="playing">Playing</ion-select-option>
+              <ion-select-option value="finished">Finished</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <ion-button type="submit" color="tertiary" expand="block" shape="round" [disabled]="f.invalid">{{ mode
+            === 'add' ? 'Add' : 'Edit' }}</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
