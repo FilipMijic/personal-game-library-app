@@ -46,7 +46,7 @@ export class GamesService {
   }
 
   getGames() {
-    return this.http.get<{ [key: string]: GameData }>(`https://book-app-fon-nmr-default-rtdb.europe-west1.firebasedatabase.app/books.json`)
+    return this.http.get<{ [key: string]: GameData }>(`https://personal-game-library-app-default-rtdb.europe-west1.firebasedatabase.app/games.json`)
     .pipe(map((gamesData) => {
       const games: Game[] = [];
         for (const key in gamesData) {

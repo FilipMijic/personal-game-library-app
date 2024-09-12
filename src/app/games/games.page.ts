@@ -20,6 +20,7 @@ export class GamesPage implements OnInit {
 
   ngOnInit() {
     this.gamesSub = this.gamesService.games.subscribe((games) => {
+    this.games = games;
     this.filteredGames = [...this.games];
   });
 
@@ -52,6 +53,7 @@ export class GamesPage implements OnInit {
         console.log(resultData);
         this.gamesService.addGame(resultData.data.gameData.title, resultData.data.gameData.developer, resultData.data.gameData.publisher, resultData.data.gameData.genre, resultData.data.gameData.platform, resultData.data.gameData.status, resultData.data.gameData.imageUrl)
         .subscribe((games) => {
+          this.filteredGames = [...this.games];
         });
       }
     });
