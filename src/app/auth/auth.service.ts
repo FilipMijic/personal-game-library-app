@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, map, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { User } from './user.model';
 
 interface AuthResponseData {
   kind: string;
@@ -25,11 +27,18 @@ interface UserData {
 export class AuthService {
 
   private _isUserAuthenticated = false;
+  private _user = new BehaviorSubject<User>(null);
 
   constructor(private http: HttpClient) { }
 
   get isUserAuthenticated() {
-    return this._isUserAuthenticated;
+    return this._user.asObservable().pipe(map((user) => {
+      if (user) {
+        return !!user.token;
+      } else {
+        return false;
+      }
+    }));
   }
 
   register(user: UserData) {
@@ -39,7 +48,13 @@ export class AuthService {
         email: user.email,
         password: user.password,
         returnSecureToken: true
-      });
+      }).pipe(
+        tap((userData) => {
+          const expirationDate = new Date(new Date().getTime() + +userData.expiresIn * 1000);
+          const user = new User(userData.localId, userData.email, userData.idToken, expirationDate);
+          this._user.next(user);
+        })
+      );
   }
 
   login(user: UserData) {
@@ -49,11 +64,17 @@ export class AuthService {
         email: user.email,
         password: user.password,
         returnSecureToken: true
-      });
+      }).pipe(
+        tap((userData) => {
+          const expirationDate = new Date(new Date().getTime() + +userData.expiresIn * 1000);
+          const user = new User(userData.localId, userData.email, userData.idToken, expirationDate);
+          this._user.next(user);
+        })
+      );
   }
 
   logout() {
-    this._isUserAuthenticated = false;
+    this._user.next(null);
   }
 
 }
