@@ -81,6 +81,24 @@ export class GamesService {
   }
 
   getGame(id: string) {
-    return this.http.get<{ key: string }>(`https://personal-game-library-app-default-rtdb.europe-west1.firebasedatabase.app/games/${id}.json`);
-  }
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        return this.http.get<GameData>(`https://personal-game-library-app-default-rtdb.europe-west1.firebasedatabase.app/games/${id}.json?auth=${token}`);
+    }),
+    map((resData) => {
+      return new Game(
+        id,
+        resData.title,
+        resData.developer,
+        resData.genre,
+        resData.publisher,
+        resData.platform,
+        resData.status,
+        resData.imageUrl,
+        resData.userId
+      );
+    })
+  );
+}
 }
