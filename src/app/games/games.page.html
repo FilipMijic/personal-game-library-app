@@ -28,4 +28,8 @@
     </ion-segment-button>
   </ion-segment>
 
+  <ion-list lines="none">
+    <app-game-element *ngFor="let game of filteredGames" [game]="game"></app-game-element>
+  </ion-list>
+
 </ion-content>

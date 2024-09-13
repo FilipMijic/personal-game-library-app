@@ -4,6 +4,7 @@ import { GamesService } from './games.service';
 import { ModalController } from '@ionic/angular';
 import { GameModalComponent } from './game-modal/game-modal.component';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-games',
@@ -15,8 +16,9 @@ export class GamesPage implements OnInit {
   games: Game[] = [];
   filteredGames: Game[] = [];
   private gamesSub: Subscription;
+  userId: string;
 
-  constructor(private gamesService: GamesService, private modalCtrl: ModalController) {}
+  constructor(private gamesService: GamesService, private modalCtrl: ModalController, private authService: AuthService) {}
 
   ngOnInit() {
     this.gamesSub = this.gamesService.games.subscribe((games) => {
@@ -24,10 +26,12 @@ export class GamesPage implements OnInit {
     this.filteredGames = [...this.games];
   });
 
+    this.authService.userId.subscribe(userId => this.userId = userId)
+
   }
 
   ionViewWillEnter() {
-    this.gamesService.getGames().subscribe((games) => {
+    this.gamesService.getGames(this.userId).subscribe((games) => {
     this.filteredGames = [...this.games];
     });
   }
@@ -57,6 +61,12 @@ export class GamesPage implements OnInit {
         });
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.gamesSub) {
+      this.gamesSub.unsubscribe();
+    }
   }
 
 }

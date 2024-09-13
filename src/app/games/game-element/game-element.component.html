@@ -1,3 +1,9 @@
-<p>
-  game-element works!
-</p>
+<ion-item [routerLink]="game.id">
+  <ion-avatar slot="start">
+    <ion-img [src]="game.imageUrl"></ion-img>
+  </ion-avatar>
+  <ion-label>
+    <h1>{{game.title}}</h1>
+    <p>{{game.developer}}</p>
+  </ion-label>
+</ion-item>
