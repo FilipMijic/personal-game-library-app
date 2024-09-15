@@ -101,4 +101,52 @@ export class GamesService {
     })
   );
 }
+
+editGame(gameId: string, title: string, developer: string, genre: string, publisher: string, imageUrl: string, platform: string, status: string, userId: string) {
+  return this.authService.token.pipe(
+    take(1),
+    switchMap((token) => {
+      return this.http.put(
+        `https://personal-game-library-app-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}.json?auth=${token}`,
+        { title, developer, genre, publisher, imageUrl, platform, status, userId }
+      );
+    }),
+    switchMap(() => this.games),
+    take(1),
+    tap((games) => {
+      const updatedGameIndex = games.findIndex((game) => game.id === gameId);
+      const updatedGames = [...games];
+      updatedGames[updatedGameIndex] = new Game(
+        gameId,
+        title,
+        developer,
+        genre,
+        publisher,
+        platform,
+        status,
+        imageUrl,
+        games[updatedGameIndex].userId
+      );
+      this._games.next(updatedGames);
+    })
+  );
+}
+
+deleteGame(id: string) {
+  return this.authService.token.pipe(
+    take(1),
+    switchMap((token) => {
+      return this.http.delete(
+        `https://personal-game-library-app-default-rtdb.europe-west1.firebasedatabase.app/games/${id}.json?auth=${token}`);
+    }),
+    switchMap(() => {
+      return this.games;
+    }),
+    take(1),
+    tap((games) => {
+      this._games.next(games.filter(game => game.id !== id));
+    })
+  );
+}
+
 }
