@@ -3,6 +3,8 @@ import { Game } from '../game.model';
 import { AlertController, ModalController, PopoverController } from '@ionic/angular';
 import { GamesService } from '../games.service';
 import { GameModalComponent } from '../game-modal/game-modal.component';
+import { StatusModalComponent } from '../status-modal/status-modal.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-game-element',
@@ -13,7 +15,7 @@ export class GameElementComponent  implements OnInit {
 
   @Input() game: Game;
   @ViewChild('popover') popover;
-  constructor(private alertCtrl: AlertController, private gameService: GamesService, private modalCtrl: ModalController, private popoverController: PopoverController) { }
+  constructor(private alertCtrl: AlertController, private gameService: GamesService, private modalCtrl: ModalController, private popoverController: PopoverController, private router: Router) { }
 
   ngOnInit() {}
 
@@ -101,6 +103,57 @@ export class GameElementComponent  implements OnInit {
         }
       }]
     }).then(alert => alert.present());
+  }
+
+  async onChangeStatus() {
+    const modal = await this.modalCtrl.create({
+      component: StatusModalComponent,
+      componentProps: {
+
+        title: 'Change status',
+        gameTitle: this.game.title,
+        developer: this.game.developer,
+        genre: this.game.genre,
+        platform: this.game.platform,
+        publisher: this.game.publisher,
+        status: this.game.status,
+        imageUrl: this.game.imageUrl,
+        mode: 'edit'
+      }
+
+    });
+
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+    console.log(data);
+
+    if (role === 'confirm') {
+      this.gameService
+        .editGame(
+          this.game.id,
+          this.game.title,
+          this.game.developer,
+          this.game.genre,
+          this.game.publisher,
+          this.game.imageUrl,
+          this.game.platform,
+          data.gameData.status,
+          this.game.userId
+        )
+        .subscribe((game) => {
+          console.log(data);
+          this.game.title = data.gameData.gameTitle;
+          this.game.developer = data.gameData.developer;
+          this.game.genre = data.gameData.genre;
+          this.game.publisher = data.gameData.publisher;
+          this.game.platform = data.gameData.platform;
+          this.game.status = data.gameData.status;
+        });
+    }
+
+    this.popoverController.dismiss();
+    this.router.navigateByUrl('/games');
   }
 
 }

@@ -11,6 +11,9 @@
     <ng-template>
       <ion-content class="ion-padding">
         <ion-list lines="none">
+          <ion-item [button]="true" [detail]="false" (click)="onChangeStatus()"><ion-icon class="options-icon"
+            name="repeat" item-start color="tertiary"></ion-icon>
+          Change status</ion-item>
           <ion-item [button]="true" [detail]="false" (click)="onEditGame()"><ion-icon class="options-icon" name="create"
               item-start color="tertiary"></ion-icon>Edit</ion-item>
           <ion-item [button]="true" [detail]="false" (click)="openAlert()"><ion-icon class="options-icon" name="trash"
