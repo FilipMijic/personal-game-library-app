@@ -6,6 +6,10 @@
     <h1>{{game.title}}</h1>
     <p>{{game.developer}}</p>
   </ion-label>
+  <ion-icon *ngIf="game.recommendId !== ''" name="star" slot="end" (click)="openModalEdit($event)" [ngStyle]="{'color': 
+  '#e6cc00'}"></ion-icon>
+  <ion-icon *ngIf="game.recommendId === ''" name="star" slot="end" (click)="openModal($event)" [ngStyle]="{'color': 
+  'grey'}"></ion-icon>
   <ion-icon name="ellipsis-vertical" slot="end" (click)="showOptions($event)" color="tertiary"></ion-icon>
   <ion-popover #popover [isOpen]="isOpen" (didDismiss)="isOpen = false">
     <ng-template>

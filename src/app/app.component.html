@@ -14,6 +14,12 @@
           </ion-item>
         </ion-menu-toggle>
         <ion-menu-toggle>
+        <ion-item routerLink="/recommendations">
+          <ion-icon name="thumbs-up" slot="start"></ion-icon>
+          <ion-label>Recommendations</ion-label>
+        </ion-item>
+      </ion-menu-toggle>
+        <ion-menu-toggle>
           <ion-item (click)="onLogout()">
             <ion-icon name="log-out" slot="start"></ion-icon>
             <ion-label>Log out</ion-label>

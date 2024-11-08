@@ -1,0 +1,23 @@
+<ion-item>
+  <ion-avatar slot="start">
+    <ion-img [src]="gameExtended.imageUrl"></ion-img>
+  </ion-avatar>
+  <ion-label>
+    <ion-grid>
+      <h1>{{gameExtended.title}}</h1>
+      <ion-row>
+        <ion-col col="6">
+          {{gameExtended.developer}}
+        </ion-col>
+        <ion-col col="6">
+          <p class="ion-text-end"><ion-icon name="star-outline" slot="end"></ion-icon> {{gameExtended.rating}}</p>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          "{{gameExtended.text}}"
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-label>
+</ion-item>

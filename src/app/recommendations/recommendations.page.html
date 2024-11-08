@@ -1,0 +1,15 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/games"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Recommendations</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="none">
+    <app-recommendations-element *ngFor="let gameExtended of gamesExtended"
+      [gameExtended]="gameExtended"></app-recommendations-element>
+  </ion-list>
+</ion-content>

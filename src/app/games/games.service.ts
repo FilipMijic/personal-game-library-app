@@ -13,6 +13,7 @@ interface GameData {
   status: string;
   imageUrl: string;
   userId: string;
+  recommendId: string;
 }
 
 @Injectable({
@@ -28,7 +29,7 @@ export class GamesService {
     return this._games.asObservable();
   }
 
-  addGame(title: string, developer: string, publisher: string, genre: string, platform: string, status: string, imageUrl: string) {
+  addGame(title: string, developer: string, publisher: string, genre: string, platform: string, status: string, recommendId: string, imageUrl: string) {
     
     let generatedId;
     let newGame: Game;
@@ -43,7 +44,7 @@ export class GamesService {
       }),
       take(1),
       switchMap(token => {
-        newGame = new Game(null, title, developer, genre, publisher, platform, status, imageUrl, fetchedUserId);
+        newGame = new Game(null, title, developer, genre, publisher, platform, status, imageUrl, fetchedUserId, recommendId);
         return this.http.post<{ name: string }>(`https://personal-game-library-app-default-rtdb.europe-west1.firebasedatabase.app/games.json?auth=${token}`, newGame)
       }),
       take(1),
@@ -68,7 +69,7 @@ export class GamesService {
       const games: Game[] = [];
         for (const key in gamesData) {
           if (gamesData.hasOwnProperty(key) && gamesData[key].userId === userId) {
-            games.push(new Game(key, gamesData[key].title, gamesData[key].developer, gamesData[key].genre, gamesData[key].publisher, gamesData[key].platform, gamesData[key].status, gamesData[key].imageUrl, gamesData[key].userId));
+            games.push(new Game(key, gamesData[key].title, gamesData[key].developer, gamesData[key].genre, gamesData[key].publisher, gamesData[key].platform, gamesData[key].status, gamesData[key].imageUrl, gamesData[key].userId, gamesData[key].recommendId));
           }
         }
         this._games.next(games);
@@ -96,19 +97,42 @@ export class GamesService {
         resData.platform,
         resData.status,
         resData.imageUrl,
-        resData.userId
+        resData.userId,
+        resData.recommendId
       );
     })
   );
 }
 
-editGame(gameId: string, title: string, developer: string, genre: string, publisher: string, imageUrl: string, platform: string, status: string, userId: string) {
+getAllGames(userId: string) {
+  return this.authService.token.pipe(
+    take(1),
+    switchMap(token => {
+      return this.http.get<{ [key: string]: GameData }>(`https://personal-game-library-app-default-rtdb.europe-west1.firebasedatabase.app/games.json?auth=${token}`);
+    }),
+    map((gamesData) => {
+      const games: Game[] = [];
+      for (const key in gamesData) {
+        if (gamesData.hasOwnProperty(key)) {
+          games.push(new Game(key, gamesData[key].title, gamesData[key].developer, gamesData[key].genre, gamesData[key].publisher, gamesData[key].platform, gamesData[key].status, gamesData[key].imageUrl, gamesData[key].userId, gamesData[key].recommendId));
+        }
+      }
+      this._games.next(games);
+      return games;
+    }),
+    tap(games => {
+      this._games.next(games);
+    })
+  );
+}
+
+editGame(gameId: string, title: string, developer: string, genre: string, publisher: string, imageUrl: string, platform: string, status: string, userId: string, recommendId) {
   return this.authService.token.pipe(
     take(1),
     switchMap((token) => {
       return this.http.put(
         `https://personal-game-library-app-default-rtdb.europe-west1.firebasedatabase.app/games/${gameId}.json?auth=${token}`,
-        { title, developer, genre, publisher, imageUrl, platform, status, userId }
+        { title, developer, genre, publisher, imageUrl, platform, status, userId, recommendId }
       );
     }),
     switchMap(() => this.games),
@@ -125,7 +149,8 @@ editGame(gameId: string, title: string, developer: string, genre: string, publis
         platform,
         status,
         imageUrl,
-        games[updatedGameIndex].userId
+        games[updatedGameIndex].userId,
+        recommendId
       );
       this._games.next(updatedGames);
     })

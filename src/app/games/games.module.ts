@@ -10,6 +10,7 @@ import { GamesPage } from './games.page';
 import { GameElementComponent } from './game-element/game-element.component';
 import { GameModalComponent } from './game-modal/game-modal.component';
 import { StatusModalComponent } from './status-modal/status-modal.component';
+import { RecommendationsModalComponent } from '../recommendations/recommendations-modal/recommendations-modal.component';
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import { StatusModalComponent } from './status-modal/status-modal.component';
     GamesPage,
     GameElementComponent,
     GameModalComponent,
-    StatusModalComponent
+    StatusModalComponent,
+    RecommendationsModalComponent,
   ]
 })
 export class GamesPageModule {}

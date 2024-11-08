@@ -5,6 +5,9 @@ import { GamesService } from '../games.service';
 import { GameModalComponent } from '../game-modal/game-modal.component';
 import { StatusModalComponent } from '../status-modal/status-modal.component';
 import { Router } from '@angular/router';
+import { RecommendationsService } from 'src/app/recommendations/recommendations.service';
+import { Recommendation } from 'src/app/recommendations/recommendation.model';
+import { RecommendationsModalComponent } from 'src/app/recommendations/recommendations-modal/recommendations-modal.component';
 
 @Component({
   selector: 'app-game-element',
@@ -14,8 +17,9 @@ import { Router } from '@angular/router';
 export class GameElementComponent  implements OnInit {
 
   @Input() game: Game;
+  @Input() recommendation: Recommendation;
   @ViewChild('popover') popover;
-  constructor(private alertCtrl: AlertController, private gameService: GamesService, private modalCtrl: ModalController, private popoverController: PopoverController, private router: Router) { }
+  constructor(private alertCtrl: AlertController, private gameService: GamesService, private modalCtrl: ModalController, private recommendationService: RecommendationsService, private popoverController: PopoverController, private router: Router) { }
 
   ngOnInit() {}
 
@@ -65,7 +69,8 @@ export class GameElementComponent  implements OnInit {
           data.gameData.imageUrl,
           data.gameData.platform,
           data.gameData.status,
-          this.game.userId
+          this.game.userId,
+          this.game.recommendId
         )
         .subscribe((game) => {
           this.game.title = data.gameData.gameTitle;
@@ -139,7 +144,8 @@ export class GameElementComponent  implements OnInit {
           this.game.imageUrl,
           this.game.platform,
           data.gameData.status,
-          this.game.userId
+          this.game.userId,
+          this.game.recommendId
         )
         .subscribe((game) => {
           console.log(data);
@@ -149,11 +155,72 @@ export class GameElementComponent  implements OnInit {
           this.game.publisher = data.gameData.publisher;
           this.game.platform = data.gameData.platform;
           this.game.status = data.gameData.status;
+          this.game.recommendId = data.gameData.recommendId;
         });
     }
 
     this.popoverController.dismiss();
     this.router.navigateByUrl('/games');
+  }
+
+  openModal(e: Event) {
+    e.stopPropagation();
+    e.preventDefault();
+    this.modalCtrl.create({
+      component: RecommendationsModalComponent,
+      componentProps: { title: 'Add recommendation' }
+    }).then(modal => {
+      modal.present();
+      return modal.onDidDismiss();
+    }).then((resultData) => {
+      console.log('Res data iz add recommendatiuosna');
+      console.log(resultData);
+      if (resultData.role === 'confirm') {
+        console.log(resultData);
+        this.recommendationService.addRecommendation(resultData.data.recommendationData.rating, resultData.data.recommendationData.text)
+          .subscribe((recommendation) => {
+            console.log(recommendation);
+            this.gameService.editGame(this.game.id, this.game.title, this.game.developer, this.game.genre, this.game.publisher, this.game.imageUrl, this.game.platform, this.game.status, this.game.userId, recommendation.id).subscribe(games => { });
+          });
+      }
+    });
+  }
+
+  async openModalEdit(e: Event) {
+    e.stopPropagation();
+    e.preventDefault();
+    console.log('On edit recommendation');
+    const recommendation = await this.recommendationService.getRecommendation(this.game.recommendId).toPromise();
+    this.recommendation = recommendation
+    console.log(this.recommendation);
+    const modal = await this.modalCtrl.create({
+      component: RecommendationsModalComponent,
+      componentProps: {
+        title: 'Edit recommendation',
+        rating: +this.recommendation.rating,
+        text: this.recommendation.text,
+        mode: 'edit'
+      }
+
+    });
+
+    modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+    console.log(data);
+
+    if (role === 'confirm') {
+      this.recommendationService
+        .editRecommendation(
+          this.recommendation.id,
+          data.recommendationData.rating,
+          data.recommendationData.text
+        )
+        .subscribe((recommendation) => {
+          this.recommendation.rating = data.recommendationData.rating;
+          this.recommendation.text = data.recommendationData.title;
+        });
+    }
   }
 
 }
